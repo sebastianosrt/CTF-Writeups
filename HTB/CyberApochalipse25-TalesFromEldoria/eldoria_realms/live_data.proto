@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package live;
+
+service LiveDataService {
+  rpc StreamLiveData(LiveDataRequest) returns (stream LiveData);
+  rpc CheckHealth(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+message LiveDataRequest {}
+
+message LiveData {
+  string timestamp = 1;
+  string message = 2;
+  string type = 3;
+}
+
+message HealthCheckRequest {
+  string ip = 1;
+  string port = 2;
+}
+
+message HealthCheckResponse {
+  string status = 1;
+}
