@@ -98,6 +98,7 @@ router.post("/table", isAdmin, async (req, res) => {
 ```
 ## Exploitation
 1. XSS
+
 As previously seen, `auction` data is directly inserted into the page without escaping.
 
 Auction data includes the **username** of every user that submitted a bid to it:
