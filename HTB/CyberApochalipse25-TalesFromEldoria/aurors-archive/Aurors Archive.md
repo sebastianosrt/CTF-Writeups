@@ -2,7 +2,7 @@
 tags: 
 references:
 ---
-# Aurors Archive
+# Aurors Archive (Unintended solution)
 Tags: #xss #sql #postgresql #rce 
 ## TLDR
 xss -> sqli -> rce
