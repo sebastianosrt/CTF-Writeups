@@ -1,4 +1,4 @@
-# Eldoria Panel
+# Eldoria Panel (Unintended solution)
 Tags: #php #rfi #ftp #rce 
 ## TLDR
 RFI -> RCE
