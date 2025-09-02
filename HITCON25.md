@@ -1,8 +1,8 @@
-# Pholyglot
+# Pholyglot 🍊
 #bash #php 
 
 challenge:
-```
+```php
 <?php
     $sandbox = '/www/sandbox/' . md5("orange" . $_SERVER['REMOTE_ADDR']);
     @mkdir($sandbox);
@@ -28,7 +28,7 @@ challenge:
 ```
 
 solve:
-```
+```python
 import requests
 import threading
 import time
