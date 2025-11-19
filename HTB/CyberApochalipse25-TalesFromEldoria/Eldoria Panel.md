@@ -85,7 +85,7 @@ $adminApiKeyMiddleware = function (Request $request, $handler) use ($app) {
 ```
 
 ## Exploitation
-Since we can't write local files, we can't provide a valid local file to `file_exsists` and `file_get_contents` that triggers RCE.
+Since we can't write local files, we can't provide a valid local file to `file_exists` and `file_get_contents` that triggers RCE.
 To bypass the file operation restrictions, we can leverage PHP wrappers ([documentation](https://www.php.net/manual/en/wrappers.php)).
 `HTTP` can't be used because `allow_url_fopen = on` is not present in `php.ini`.
 
